@@ -23,9 +23,7 @@ use near_contract_standards::non_fungible_token::NonFungibleToken;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::LazyOption;
 use near_sdk::json_types::ValidAccountId;
-use near_sdk::{
-    env, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue,
-};
+use near_sdk::{env, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue};
 
 near_sdk::setup_alloc!();
 
@@ -100,6 +98,42 @@ impl Contract {
     ) -> Token {
         self.tokens.mint(token_id, receiver_id, Some(token_metadata))
     }
+    //
+    // /// lul
+    // pub fn propagate(
+    //     &mut self,
+    //     token_id : TokenId,
+    //     orig_receiver_id :ValidAccountId,
+    //     mint_receiver_id :ValidAccountId) {
+    //
+    //     // let metadata = self.tokens.token_metadata_by_id.and_then(|by_id| by_id.get(&token_id)).unwrap();
+    //     let metadata : TokenMetadata = TokenMetadata{
+    //         title: None,
+    //         description: None,
+    //         media: None,
+    //         media_hash: None,
+    //         copies: None,
+    //         issued_at: None,
+    //         expires_at: None,
+    //         starts_at: None,
+    //         updated_at: None,
+    //         extra: None,
+    //         reference: None,
+    //         reference_hash: None
+    //     };
+    //
+    //     self.nft_mint(token_id,mint_receiver_id, metadata);
+    //
+    //     let x = &token_id;
+    //     // let new_id = token_id.clone();
+    //     // new_id = new_id.add("x");
+    //     let new_id: TokenId = "new".to_string();
+    //     self.nft_transfer(orig_receiver_id, new_id,None, None);
+    // }
+    //
+    // fn return_metadata(&mut self, token_id: TokenId) -> TokenMetadata {
+    //     let metadata = self.token_metadata_by_id.and_then(|by_id| by_id.get(&token_id));
+    // }
 }
 
 near_contract_standards::impl_non_fungible_token_core!(Contract, tokens);
