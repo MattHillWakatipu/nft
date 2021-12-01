@@ -15,6 +15,7 @@ NOTES:
   - To prevent the deployed contract from being modified or deleted, it should not have any access
     keys on its account.
 */
+use std::ops::Add;
 use near_contract_standards::non_fungible_token::metadata::{
     NFTContractMetadata, NonFungibleTokenMetadataProvider, TokenMetadata, NFT_METADATA_SPEC,
 };
@@ -98,39 +99,44 @@ impl Contract {
     ) -> Token {
         self.tokens.mint(token_id, receiver_id, Some(token_metadata))
     }
-    //
-    // /// lul
-    // pub fn propagate(
-    //     &mut self,
-    //     token_id : TokenId,
-    //     orig_receiver_id :ValidAccountId,
-    //     mint_receiver_id :ValidAccountId) {
-    //
-    //     // let metadata = self.tokens.token_metadata_by_id.and_then(|by_id| by_id.get(&token_id)).unwrap();
-    //     let metadata : TokenMetadata = TokenMetadata{
-    //         title: None,
-    //         description: None,
-    //         media: None,
-    //         media_hash: None,
-    //         copies: None,
-    //         issued_at: None,
-    //         expires_at: None,
-    //         starts_at: None,
-    //         updated_at: None,
-    //         extra: None,
-    //         reference: None,
-    //         reference_hash: None
-    //     };
-    //
-    //     self.nft_mint(token_id,mint_receiver_id, metadata);
-    //
-    //     let x = &token_id;
-    //     // let new_id = token_id.clone();
-    //     // new_id = new_id.add("x");
-    //     let new_id: TokenId = "new".to_string();
-    //     self.nft_transfer(orig_receiver_id, new_id,None, None);
-    // }
-    //
+
+    /// lul
+    #[payable]
+    pub fn propagate(
+        &mut self,
+        token_id : TokenId,
+        orig_receiver_id :ValidAccountId,
+        mint_receiver_id :ValidAccountId) {
+
+        // let metadata = self.tokens.token_metadata_by_id.and_then(|by_id| by_id.get(&token_id)).unwrap();
+        let metadata : TokenMetadata = TokenMetadata{
+            title: Some("Title".into()),
+            description: None,
+            media: None,
+            media_hash: None,
+            copies: None,
+            issued_at: None,
+            expires_at: None,
+            starts_at: None,
+            updated_at: None,
+            extra: None,
+            reference: None,
+            reference_hash: None
+        };
+
+        // let x = token_id.clone();
+
+        let new_id = token_id.to_string().add(";)");
+
+        // // let new_id = token_id.clone();
+        // // new_id = new_id.add("x");
+        // let new_id: TokenId = "new".to_string();
+
+        // self.nft_transfer(orig_receiver_id, token_id, None, Some("thevarus".into()));
+        self.tokens.nft_transfer(orig_receiver_id, token_id, None, Some("thevarus".into()));
+        // self.nft_mint(new_id.to_string(), mint_receiver_id, metadata);
+    }
+
     // fn return_metadata(&mut self, token_id: TokenId) -> TokenMetadata {
     //     let metadata = self.token_metadata_by_id.and_then(|by_id| by_id.get(&token_id));
     // }
