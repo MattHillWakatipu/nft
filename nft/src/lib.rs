@@ -133,8 +133,11 @@ impl Contract {
         // let new_id: TokenId = "new".to_string();
 
         // self.nft_transfer(orig_receiver_id, token_id, None, Some("thevarus".into()));
-        self.tokens.nft_transfer(orig_receiver_id, token_id, None, Some("thevarus".into()));
-        // self.nft_mint(new_id.to_string(), mint_receiver_id, metadata);
+        // self.tokens.nft_transfer(orig_receiver_id, token_id, None, Some("thevarus".into()));
+
+        let sender_id = env::predecessor_account_id();
+        self.tokens.internal_transfer(&sender_id, orig_receiver_id.as_ref(), &token_id, None, Some("thevarusspreads".into()));
+        self.nft_mint(new_id.to_string(), mint_receiver_id, metadata);
     }
 
     // fn return_metadata(&mut self, token_id: TokenId) -> TokenMetadata {
