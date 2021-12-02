@@ -15,7 +15,6 @@ NOTES:
   - To prevent the deployed contract from being modified or deleted, it should not have any access
     keys on its account.
 */
-use std::borrow::Borrow;
 use std::ops::Add;
 use near_contract_standards::non_fungible_token::metadata::{
     NFTContractMetadata, NonFungibleTokenMetadataProvider, TokenMetadata, NFT_METADATA_SPEC,
@@ -25,7 +24,7 @@ use near_contract_standards::non_fungible_token::NonFungibleToken;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::LazyOption;
 use near_sdk::json_types::ValidAccountId;
-use near_sdk::{env, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue};
+use near_sdk::{env, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, PromiseOrValue};
 
 near_sdk::setup_alloc!();
 
@@ -109,7 +108,7 @@ impl Contract {
         orig_receiver_id :ValidAccountId,
         mint_receiver_id :ValidAccountId) {
 
-        // let metadata = self.tokens.token_metadata_by_id.and_then(|by_id| by_id.get(&token_id)).unwrap();
+        // let metadata = self.tokens.token_metadata_by_id.as_ref().and_then(|by_id| by_id.get(&token_id)).unwrap();
         let metadata : TokenMetadata = TokenMetadata{
             title: Some("Title".into()),
             description: None,
@@ -132,14 +131,11 @@ impl Contract {
         self.nft_mint(new_id.to_string(), mint_receiver_id, metadata);
     }
 
-    // fn return_metadata(&mut self, token_id: TokenId) -> TokenMetadata {
-    //     let metadata = self.token_metadata_by_id.and_then(|by_id| by_id.get(&token_id));
-    // }
 }
 
 near_contract_standards::impl_non_fungible_token_core!(Contract, tokens);
-near_contract_standards::impl_non_fungible_token_approval!(Contract, tokens);
-near_contract_standards::impl_non_fungible_token_enumeration!(Contract, tokens);
+// near_contract_standards::impl_non_fungible_token_approval!(Contract, tokens);
+// near_contract_standards::impl_non_fungible_token_enumeration!(Contract, tokens);
 
 #[near_bindgen]
 impl NonFungibleTokenMetadataProvider for Contract {
