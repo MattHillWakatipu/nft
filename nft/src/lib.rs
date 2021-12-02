@@ -15,6 +15,7 @@ NOTES:
   - To prevent the deployed contract from being modified or deleted, it should not have any access
     keys on its account.
 */
+use std::borrow::Borrow;
 use std::ops::Add;
 use near_contract_standards::non_fungible_token::metadata::{
     NFTContractMetadata, NonFungibleTokenMetadataProvider, TokenMetadata, NFT_METADATA_SPEC,
@@ -124,16 +125,7 @@ impl Contract {
             reference_hash: None
         };
 
-        // let x = token_id.clone();
-
         let new_id = token_id.to_string().add(";)");
-
-        // // let new_id = token_id.clone();
-        // // new_id = new_id.add("x");
-        // let new_id: TokenId = "new".to_string();
-
-        // self.nft_transfer(orig_receiver_id, token_id, None, Some("thevarus".into()));
-        // self.tokens.nft_transfer(orig_receiver_id, token_id, None, Some("thevarus".into()));
 
         let sender_id = env::predecessor_account_id();
         self.tokens.internal_transfer(&sender_id, orig_receiver_id.as_ref(), &token_id, None, Some("thevarusspreads".into()));
