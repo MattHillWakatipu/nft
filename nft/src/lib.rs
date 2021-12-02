@@ -14,7 +14,7 @@ NOTES:
     attach more deposit than required.
   - To prevent the deployed contract from being modified or deleted, it should not have any access
     keys on its account.
-*/
+ */
 use std::ops::Add;
 use near_contract_standards::non_fungible_token::metadata::{
     NFTContractMetadata, NonFungibleTokenMetadataProvider, TokenMetadata, NFT_METADATA_SPEC,
@@ -25,6 +25,10 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::LazyOption;
 use near_sdk::json_types::ValidAccountId;
 use near_sdk::{env, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, PromiseOrValue};
+
+use std::collections::HashMap;
+use near_contract_standards::non_fungible_token::core::NonFungibleTokenCore;
+use near_contract_standards::non_fungible_token::core::NonFungibleTokenResolver;
 
 near_sdk::setup_alloc!();
 
@@ -130,10 +134,67 @@ impl Contract {
         self.tokens.internal_transfer(&sender_id, orig_receiver_id.as_ref(), &token_id, None, Some("thevarusspreads".into()));
         self.nft_mint(new_id.to_string(), mint_receiver_id, metadata);
     }
-
 }
 
-near_contract_standards::impl_non_fungible_token_core!(Contract, tokens);
+#[near_bindgen]
+impl NonFungibleTokenCore for Contract {
+    #[payable]
+    fn nft_transfer(
+        &mut self,
+        receiver_id: ValidAccountId,
+        token_id: TokenId,
+        approval_id: Option<u64>,
+        memo: Option<String>,
+    ) {
+        self.tokens.nft_transfer(receiver_id, token_id, approval_id, memo)
+    }
+
+    #[payable]
+    fn nft_transfer_call(
+        &mut self,
+        receiver_id: ValidAccountId,
+        token_id: TokenId,
+        approval_id: Option<u64>,
+        memo: Option<String>,
+        msg: String,
+    ) -> PromiseOrValue<bool> {
+        self.tokens.nft_transfer_call(receiver_id, token_id, approval_id, memo, msg)
+    }
+
+    fn nft_token(self, token_id: TokenId) -> Option<Token> {
+        self.tokens.nft_token(token_id)
+    }
+
+    fn mint(
+        &mut self,
+        token_id: TokenId,
+        token_owner_id: ValidAccountId,
+        token_metadata: Option<TokenMetadata>,
+    ) -> Token {
+        self.tokens.mint(token_id, token_owner_id, token_metadata)
+    }
+}
+
+#[near_bindgen]
+impl NonFungibleTokenResolver for Contract {
+    #[private]
+    fn nft_resolve_transfer(
+        &mut self,
+        previous_owner_id: AccountId,
+        receiver_id: AccountId,
+        token_id: TokenId,
+        approved_account_ids: Option<HashMap<AccountId, u64>>,
+    ) -> bool {
+        self.tokens.nft_resolve_transfer(
+            previous_owner_id,
+            receiver_id,
+            token_id,
+            approved_account_ids,
+        )
+    }
+}
+
+// near_contract_standards::impl_non_fungible_token_core!(Contract, tokens);
 // near_contract_standards::impl_non_fungible_token_approval!(Contract, tokens);
 // near_contract_standards::impl_non_fungible_token_enumeration!(Contract, tokens);
 
