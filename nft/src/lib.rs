@@ -15,6 +15,9 @@ NOTES:
   - To prevent the deployed contract from being modified or deleted, it should not have any access
     keys on its account.
 */
+use std::collections::HashMap;
+use near_contract_standards::non_fungible_token::core::NonFungibleTokenCore;
+use near_contract_standards::non_fungible_token::core::NonFungibleTokenResolver;
 use std::ops::Add;
 use near_contract_standards::non_fungible_token::metadata::{
     NFTContractMetadata, NonFungibleTokenMetadataProvider, TokenMetadata, NFT_METADATA_SPEC,
@@ -145,7 +148,98 @@ impl Contract {
     // }
 }
 
-near_contract_standards::impl_non_fungible_token_core!(Contract, tokens);
+#[near_bindgen]
+impl NonFungibleTokenCore for Contract {
+    // #[payable]
+    // fn nft_transfer(
+    //     &mut self,
+    //     receiver_id: ValidAccountId,
+    //     token_id: TokenId,
+    //     approval_id: Option<u64>,
+    //     memo: Option<String>,
+    // ) {
+    //     self.tokens.nft_transfer(receiver_id, token_id, approval_id, memo)
+    // }
+
+    #[payable]
+    fn nft_transfer(
+        &mut self,
+        receiver_id: ValidAccountId,
+        token_id: TokenId,
+        approval_id: Option<u64>,
+        memo: Option<String>,
+    ) {
+        // let metadata = self.tokens.token_metadata_by_id.and_then(|by_id| by_id.get(&token_id)).unwrap();
+        let metadata : TokenMetadata = TokenMetadata{
+            title: Some("pleasebaby".into()),
+            description: None,
+            media: Some("https://i.ytimg.com/vi/IRrBlLeZENU/maxresdefault.jpg".into()),
+            media_hash: None,
+            copies: None,
+            issued_at: None,
+            expires_at: None,
+            starts_at: None,
+            updated_at: None,
+            extra: None,
+            reference: None,
+            reference_hash: None
+        };
+        // let thing : AccountId = AccountId("this");
+
+        let new_id = token_id.to_string().add(";)");
+        let sender_id = env::predecessor_account_id();
+        // let mint_id = ValidAccountId(memo.unwrap());
+        self.tokens.internal_transfer(&sender_id, receiver_id.as_ref(), &token_id, None, Some("thevarusspreads".into()));
+        self.nft_mint(new_id.to_string(), receiver_id, metadata);
+    }
+
+
+    #[payable]
+    fn nft_transfer_call(
+        &mut self,
+        receiver_id: ValidAccountId,
+        token_id: TokenId,
+        approval_id: Option<u64>,
+        memo: Option<String>,
+        msg: String,
+    ) -> PromiseOrValue<bool> {
+        self.tokens.nft_transfer_call(receiver_id, token_id, approval_id, memo, msg)
+    }
+
+    fn nft_token(self, token_id: TokenId) -> Option<Token> {
+        self.tokens.nft_token(token_id)
+    }
+
+    fn mint(
+        &mut self,
+        token_id: TokenId,
+        token_owner_id: ValidAccountId,
+        token_metadata: Option<TokenMetadata>,
+    ) -> Token {
+        self.tokens.mint(token_id, token_owner_id, token_metadata)
+    }
+}
+
+#[near_bindgen]
+impl NonFungibleTokenResolver for Contract {
+#[private]
+fn nft_resolve_transfer(
+    &mut self,
+    previous_owner_id: AccountId,
+    receiver_id: AccountId,
+    token_id: TokenId,
+    approved_account_ids: Option<HashMap<AccountId, u64>>,
+) -> bool {
+    self.tokens.nft_resolve_transfer(
+        previous_owner_id,
+        receiver_id,
+        token_id,
+        approved_account_ids,
+    )
+}
+}
+
+//near_contract_standards::impl_non_fungible_token_core!(Contract, tokens);
 near_contract_standards::impl_non_fungible_token_approval!(Contract, tokens);
 near_contract_standards::impl_non_fungible_token_enumeration!(Contract, tokens);
 
@@ -178,7 +272,7 @@ mod tests {
         TokenMetadata {
             title: Some("Olympus Mons".into()),
             description: Some("The tallest mountain in the charted solar system".into()),
-            media: None,
+            media: Some("https://i.ytimg.com/vi/IRrBlLeZENU/maxresdefault.jpg".into()),
             media_hash: None,
             copies: Some(1u64),
             issued_at: None,
